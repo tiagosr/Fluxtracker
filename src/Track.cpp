@@ -15,6 +15,21 @@ Track::Track(int stepcount): ofxUIWidget() {
     steps = stepcount;
 }
 
+void Track::addColumn(std::string name,
+                      float r, float g, float b,
+                      int width,
+                      tr1::shared_ptr<StepMediator> mediator) {
+    Track::Column newcolumn = {
+        name,
+        r, g, b,
+        width,
+        mediator
+    };
+    columns.push_back(newcolumn);
+    rect->width += font->stringWidth("0")*width;
+    
+}
+
 void Track::beat(int column, StepPtr step) {
     
 }
@@ -38,6 +53,38 @@ void Track::drawFill() {
             } else {
                 font->drawString(columns[c].mediator->emptyStep(), x, y);
             }
+            y += charheight;
         }
+        x += charwidth*(columns[c].width+1)
     }
+}
+
+int Track::insert(int column, int stepnum, StepPtr stepdata) {
+    StepPtr step = columns[column].steps, prev = NULL;
+    stepdata->time = stepnum;
+    if (step==NULL) {
+        columns[column].steps = stepdata;
+        return 1;
+    }
+    while (step != NULL) {
+        if (step->time >= stepnum) {
+            if(prev == NULL) {
+                stepdata->next = columns[column].steps;
+                columns[column].steps = stepdata;
+            } else {
+                prev->next = stepdata;
+            }
+            while (step!=NULL) {
+                step->time += 1;
+                step = step->next;
+            }
+        }
+        
+        prev = step;
+        step = step->next;
+    }
+}
+
+int Track::replace(int column, int stepnum, StepPtr stepdata) {
+    
 }

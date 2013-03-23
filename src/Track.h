@@ -46,6 +46,9 @@ public:
  * and void beat(column, step) to implement custom tracks.
  */
 class Track: public ofxUIWidget {
+    float charwidth, charheight;
+    int cursor_column, cursor_subcolumn, cursor_step;
+
     int steps;
     float time;
     struct Column {
@@ -82,6 +85,10 @@ public:
     std::vector<TrackPtr> tracks;
     void tick(float timedelta);
     void addTrack(int column, TrackPtr track);
+};
+
+class Module {
+    
 };
 
 class Tracker {
