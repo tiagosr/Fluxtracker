@@ -1,0 +1,4 @@
+ofxNetwork
+ofxOsc
+ofxVectorGraphics
+ofxUI
