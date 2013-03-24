@@ -34,6 +34,14 @@ void Track::beat(int column, StepPtr step) {
     
 }
 
+void Track::patternEnter() {
+    
+}
+
+void Track::patternExit() {
+    
+}
+
 void Track::drawFill() {
     if (draw_fill) {
         ofFill();
@@ -146,5 +154,38 @@ int Track::replace(int column, int stepnum, StepPtr stepdata) {
             }
         }
         return 0;
+    }
+}
+
+void Track::setStepCount(int steps) {
+    this->steps = steps;
+}
+
+void Track::tick(float timedelta) {
+    if (time <=0.0) {
+        if (time + timedelta > 0.0) {
+            patternEnter();
+            for (vector<Column>::iterator i = columns.begin(); i != columns.end(); i++) {
+                i->curstep = i->steps;
+            }
+        }
+    }
+    if (time < steps) {
+        if (time + timedelta > steps) {
+            patternExit()
+        } else {
+            time += steps;
+            int itime = time;
+            int colcount = columns.size();
+            for (int i = 0; i < colcount; i++) {
+                StepPtr current = columns[i].curstep;
+                if (current != NULL) {
+                    if (current->time <=itime) {
+                        beat(i, current);
+                        columns[i].curstep = current->next;
+                    }
+                }
+            }
+        }
     }
 }

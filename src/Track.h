@@ -55,6 +55,7 @@ class Track: public ofxUIWidget {
         std::string name;
         float r, g, b;
         StepPtr steps;
+        StepPtr curstep;
         int width;
         tr1::shared_ptr<StepMediator> mediator;
     };
@@ -104,15 +105,18 @@ public:
     virtual void drawFill();
 };
 
-class Tracker {
+class Tracker: public ofxUICanvas {
     float bpm;
     float time;
+    std::string name;
 public:
     typedef tr1::shared_ptr<Module> ModulePtr;
     std::vector<ModulePtr> modules;
     
     void setTime(float time);
     void tick(float timedelta);
+    
+    virtual void drawFill();
 };
 
 #endif /* defined(__Fluxtracker__Track__) */
