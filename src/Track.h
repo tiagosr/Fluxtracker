@@ -64,6 +64,8 @@ public:
     virtual ~Track() {}
     // where the implementation goes
     virtual void beat(int column, StepPtr step);
+    virtual void patternEnter();
+    virtual void patternExit();
     void addColumn(std::string name,
                    float r, float g, float b,
                    int width,
@@ -72,6 +74,7 @@ public:
     int replace(int column, int stepnum, StepPtr stepdata);
     void setStepCount(int steps);
     void tick(float timedelta);
+    void setTime(float time);
     void reset();
     
     virtual void drawFill();
@@ -84,20 +87,31 @@ public:
     typedef tr1::shared_ptr<Track> TrackPtr;
     std::vector<TrackPtr> tracks;
     void tick(float timedelta);
+    void patternEnter();
+    void patternExit();
     void addTrack(int column, TrackPtr track);
+    void reset();
 };
 
-class Module {
-    
+class Module: public ofxUIWidgetWithLabel {
+public:
+    struct ModulePatternInstance {
+        int pos;
+        tr1::shared_ptr<TrackPattern> pattern;
+    };
+    std::vector<ModulePatternInstance> patterns;
+    void reset();
+    virtual void drawFill();
 };
 
 class Tracker {
+    float bpm;
+    float time;
 public:
-    typedef tr1::shared_ptr<TrackPattern> PatternPtr;
-    typedef std::vector<PatternPtr> PatternRow;
-    std::vector<PatternPtr> patterns;
-    std::vector<PatternRow> rows;
+    typedef tr1::shared_ptr<Module> ModulePtr;
+    std::vector<ModulePtr> modules;
     
+    void setTime(float time);
     void tick(float timedelta);
 };
 

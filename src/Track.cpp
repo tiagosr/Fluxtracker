@@ -61,30 +61,90 @@ void Track::drawFill() {
 
 int Track::insert(int column, int stepnum, StepPtr stepdata) {
     StepPtr step = columns[column].steps, prev = NULL;
-    stepdata->time = stepnum;
-    if (step==NULL) {
-        columns[column].steps = stepdata;
-        return 1;
-    }
-    while (step != NULL) {
-        if (step->time >= stepnum) {
-            if(prev == NULL) {
-                stepdata->next = columns[column].steps;
-                columns[column].steps = stepdata;
-            } else {
-                prev->next = stepdata;
+    if(stepdata != NULL) {
+        stepdata->time = stepnum;
+        if (step==NULL) {
+            columns[column].steps = stepdata;
+            return 1;
+        }
+        while (step != NULL) {
+            if (step->time >= stepnum) {
+                if(prev == NULL) {
+                    stepdata->next = columns[column].steps;
+                    columns[column].steps = stepdata;
+                } else {
+                    prev->next = stepdata;
+                }
+                while (step!=NULL) {
+                    step->time += 1;
+                    step = step->next;
+                }
+                return 1;
             }
-            while (step!=NULL) {
-                step->time += 1;
-                step = step->next;
+            
+            prev = step;
+            step = step->next;
+        }
+        prev->next = stepdata;
+        return 1;
+    } else {
+        while(step!=NULL) {
+            if (step->time >= stepnum) {
+                while (step!=NULL) {
+                        step->time += 1;
+                        step=step->next;
+                }
+                return 1;
             }
         }
-        
-        prev = step;
-        step = step->next;
+        return 0;
     }
 }
 
 int Track::replace(int column, int stepnum, StepPtr stepdata) {
-    
+    StepPtr step = columns[column].steps, prev = NULL;
+    if(stepdata != NULL) {
+        stepdata->time = stepnum;
+        if (step==NULL) {
+            columns[column].steps = stepdata;
+            return 1;
+        }
+        while (step != NULL) {
+            if (step->time > stepnum) {
+                if(prev == NULL) {
+                    stepdata->next = columns[column].steps;
+                    columns[column].steps = stepdata;
+                } else {
+                    prev->next = stepdata;
+                }
+                return 1;
+            } else if (step->time == stepnum) {
+                if(prev == NULL) {
+                    stepdata->next = step->next;
+                    columns[column].steps = stepdata;
+                } else {
+                    stepdata->next = step->next;
+                    prev->next = stepdata;
+                }
+                return 1;
+            }
+            
+            prev = step;
+            step = step->next;
+        }
+        prev->next = stepdata;
+        return 1;
+    } else {
+        while(step!=NULL) {
+            if (step->time == stepnum) {
+                if (prev==NULL) {
+                    columns[column].steps = step->next;
+                } else {
+                    prev->next = step->next;
+                }
+                return 1;
+            }
+        }
+        return 0;
+    }
 }
